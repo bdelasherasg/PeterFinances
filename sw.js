@@ -1,5 +1,5 @@
 // Service Worker para Control Financiero Peter
-const CACHE_NAME = 'Peter Finances';
+const CACHE_NAME = 'Peter_Finances';
 const urlsToCache = [
   '/',
   '/index.html',
