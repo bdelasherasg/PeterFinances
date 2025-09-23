@@ -1,0 +1,30 @@
+{
+  "name": "Control Financiero Peter",
+  "short_name": "FinanzasPeter", 
+  "description": "App de gestión de liquidez personal para vendedores - Creada por Bernardo para Peter",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#4CAF50",
+  "theme_color": "#4CAF50",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png", 
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-144.png",
+      "sizes": "144x144", 
+      "type": "image/png"
+    }
+  ],
+  "categories": ["finance", "productivity", "business"]
+}
