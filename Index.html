@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Financiero - Peter</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .screen {
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .screen.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            margin: -20px -20px 20px -20px;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .semaforo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .semaforo.rojo { background: linear-gradient(135deg, #f44336, #d32f2f); }
+        .semaforo.amarillo { background: linear-gradient(135deg, #FF9800, #F57C00); }
+        .semaforo.verde { background: linear-gradient(135deg, #4CAF50, #388E3C); }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-top: 1px solid #e1e5e9;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            border-radius: 10px;
+            margin: 0 5px;
+        }
+
+        .nav-item:hover {
+            background: #f5f5f5;
+        }
+
+        .nav-item.active {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .nav-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .nav-text {
+            font-size: 0.7em;
+            font-weight: 500;
+        }
+
+        .resumen-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .resumen-item:last-child {
+            border-bottom: none;
+        }
+
+        .resumen-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .resumen-valor {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .resumen-valor.positivo { color: #4CAF50; }
+        .resumen-valor.negativo { color: #f44336; }
+
+        .deuda-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .deuda-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .deuda-nombre {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .deuda-monto {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .progreso-bar {
+            background: #e1e5e9;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progreso-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.5s ease;
+        }
+
+        .deuda-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+            color: #666;
+        }
+
+        .date-info {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+            border: 1px solid #bbdefb;
+        }
+
+        .footer-credits {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8em;
+            color: #666;
+            border-top: 1px solid #f0f0f0;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .screen {
+                padding: 15px;
+            }
+
+            .header {
+                margin: -15px -15px 15px -15px;
+            }
+
+            .bottom-nav {
+                max-width: 100%;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .calculation-preview {
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de Bienvenida -->
+        <div class="screen active" id="welcome-screen">
+            <div class="header">
+                <h1>💰 ¡Hola Peter!</h1>
+                <p>Comencemos organizando tus finanzas</p>
+            </div>
+            
+            <div class="card">
+                <h3>🎯 Tu Control Financiero Personal</h3>
+                <p style="margin-bottom: 20px; color: #666; line-height: 1.5;">
+                    Esta app te ayudará a separar automáticamente dinero para tus deudas cada vez que recibas ingresos. ¡Vamos a tomar control de tus finanzas!
+                </p>
+                <button class="btn btn-primary" onclick="showScreen('config-screen')">
+                    ▶️ Comenzar Configuración
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Configuración -->
+        <div class="screen" id="config-screen">
+            <div class="header">
+                <h1>⚙️ Configuración</h1>
+                <p>Define tus ingresos y gastos básicos</p>
+            </div>
+
+            <div class="card">
+                <h3>💵 Ingresos Promedio</h3>
+                <div class="form-group">
+                    <label for="ingreso-promedio">¿Cuánto vendes en promedio por día?</label>
+                    <input type="number" id="ingreso-promedio" placeholder="Ejemplo: 50000">
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🏠 Gastos Diarios</h3>
+                <div class="form-group">
+                    <label for="gastos-basicos">Gastos básicos (comida, transporte)</label>
+                    <input type="number" id="gastos-basicos" placeholder="Ejemplo: 15000">
+                </div>
+                <div class="form-group">
+                    <label for="gastos-personales">Gastos personales (entretenimiento)</label>
+                    <input type="number" id="gastos-personales" placeholder="Ejemplo: 10000">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveConfig()">
+                ✅ Guardar Configuración
+            </button>
+        </div>
+
+        <!-- Dashboard Principal -->
+        <div class="screen" id="dashboard-screen">
+            <div class="header">
+                <h1>📊 Panel Principal</h1>
+                <p id="fecha-actual"></p>
+            </div>
+
+            <div class="semaforo" id="semaforo-estado">
+                🔴
+            </div>
+
+            <div class="card">
+                <h3>📈 Resumen de Hoy</h3>
+                <div class="resumen-item">
+                    <span class="resumen-label">💵 Ingresos del día</span>
+                    <span class="resumen-valor positivo" id="ingresos-dia">$0</span>
+                </div>
+                <div class="resumen-item">
+                    <span class="resumen-label">🎯 Separar para deudas</span>
+                    <span class="resumen-valor negativo" id="separar-deudas">$0</span>
+                </div>
+                <div class="resumen-item">
+                    <span class="resumen-label">💸 Gastos del día</span>
+                    <span class="resumen-valor negativo" id="gastos-dia">$0</span>
+                </div>
+                <div class="resumen-item" style="border-top: 2px solid #4CAF50; padding-top: 15px;">
+                    <span class="resumen-label"><strong>✅ Dinero libre</strong></span>
+                    <span class="resumen-valor" id="dinero-libre">$0</span>
+                </div>
+            </div>
+
+            <div id="estado-deudas"></div>
+
+            <button class="btn btn-primary" onclick="showAddIncomeModal()">
+                💰 Registrar Ingreso
+            </button>
+        </div>
+
+        <!-- Pantalla de Deudas -->
+        <div class="screen" id="debts-screen">
+            <div class="header">
+                <h1>📋 Mis Deudas</h1>
+                <p>Gestiona y controla tus deudas</p>
+            </div>
+
+            <div id="deudas-container">
+                <div class="empty-state">
+                    <div class="icon">📝</div>
+                    <h3>¡Comienza agregando tu primera deuda!</h3>
+                    <p>Toma control de tus finanzas paso a paso</p>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="showAddDebtModal()">
+                ➕ Agregar Nueva Deuda
+            </button>
+        </div>
+
+        <!-- Pantalla de Gastos -->
+        <div class="screen" id="expenses-screen">
+            <div class="header">
+                <h1>💳 Mis Gastos</h1>
+                <p>Registra tus gastos diarios</p>
+            </div>
+
+            <div class="card">
+                <h3>💸 Gastos de Hoy</h3>
+                <div id="gastos-list">
+                    <div class="empty-state">
+                        <div class="icon">🛒</div>
+                        <p>No has registrado gastos hoy</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="showAddExpenseModal()">
+                ➕ Registrar Gasto
+            </button>
+        </div>
+
+        <!-- Pantalla de Reportes -->
+        <div class="screen" id="reports-screen">
+            <div class="header">
+                <h1>📊 Reportes</h1>
+                <p>Tu progreso financiero</p>
+            </div>
+
+            <div class="card">
+                <h3>📈 Resumen Semanal</h3>
+                <div id="reporte-semanal"></div>
+            </div>
+
+            <div class="card">
+                <h3>🎯 Progreso de Deudas</h3>
+                <div id="progreso-deudas"></div>
+            </div>
+        </div>
+
+        <!-- Navegación Inferior -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showScreen('dashboard-screen')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">Inicio</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('debts-screen')">
+                <div class="nav-icon">📋</div>
+                <div class="nav-text">Deudas</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('expenses-screen')">
+                <div class="nav-icon">💳</div>
+                <div class="nav-text">Gastos</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('reports-screen')">
+                <div class="nav-icon">📊</div>
+                <div class="nav-text">Reportes</div>
+            </div>
+        </div>
+
+        <!-- Footer con Créditos -->
+        <div class="footer-credits">
+            App creada para Peter por Bernardo
+        </div>
+    </div>
+
+    <!-- Modal Agregar Ingreso -->
+    <div class="modal" id="income-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">💰 Registrar Ingreso</h3>
+                <button class="close-btn" onclick="closeModal('income-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="monto-ingreso">Monto recibido</label>
+                <input type="number" id="monto-ingreso" placeholder="Ejemplo: 25000">
+            </div>
+            <div class="form-group">
+                <label for="descripcion-ingreso">Descripción (opcional)</label>
+                <input type="text" id="descripcion-ingreso" placeholder="Venta, comisión, etc.">
+            </div>
+            <div id="calculo-separacion"></div>
+            <button class="btn btn-primary" onclick="addIncome()">
+                ✅ Registrar Ingreso
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Deuda -->
+    <div class="modal" id="debt-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📋 Agregar Deuda</h3>
+                <button class="close-btn" onclick="closeModal('debt-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="nombre-deuda">Descripción de la deuda</label>
+                <input type="text" id="nombre-deuda" placeholder="Ejemplo: Tarjeta de crédito">
+            </div>
+            <div class="form-group">
+                <label for="monto-deuda">Monto total</label>
+                <input type="number" id="monto-deuda" placeholder="Ejemplo: 200000">
+            </div>
+            <div class="form-group">
+                <label for="fecha-objetivo">Fecha objetivo para saldar</label>
+                <input type="date" id="fecha-objetivo" onchange="calculateDailyPayment()">
+            </div>
+            <div id="calculo-pago-diario"></div>
+            <button class="btn btn-primary" onclick="addDebt()">
+                ✅ Agregar Deuda
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Gasto -->
+    <div class="modal" id="expense-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">💸 Registrar Gasto</h3>
+                <button class="close-btn" onclick="closeModal('expense-modal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="monto-gasto">Monto gastado</label>
+                <input type="number" id="monto-gasto" placeholder="Ejemplo: 5000">
+            </div>
+            <div class="form-group">
+                <label for="categoria-gasto">Categoría</label>
+                <select id="categoria-gasto" style="width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">
+                    <option value="basicos">Gastos básicos</option>
+                    <option value="personales">Gastos personales</option>
+                    <option value="emergencia">Emergencia</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="descripcion-gasto">Descripción</label>
+                <input type="text" id="descripcion-gasto" placeholder="Comida, transporte, etc.">
+            </div>
+            <button class="btn btn-primary" onclick="addExpense()">
+                ✅ Registrar Gasto
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Estado global de la aplicación
+        let appState = {
+            user: "Peter",
+            ingresoPromedio: 0,
+            gastosBasicos: 0,
+            gastosPersonales: 0,
+            deudas: [],
+            ingresos: [],
+            gastos: [],
+            configurado: false
+        };
+
+        // Cargar datos al iniciar
+        window.addEventListener('load', function() {
+            loadData();
+            updateFechaActual();
+            
+            // Si ya está configurado, ir al dashboard
+            if (appState.configurado) {
+                showScreen('dashboard-screen');
+                updateDashboard();
+                renderDeudas();
+                renderGastos();
+                updateReportes();
+            }
+        });
+
+        // Navegación entre pantallas
+        function showScreen(screenId) {
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Mostrar la pantalla seleccionada
+            document.getElementById(screenId).classList.add('active');
+            
+            // Actualizar navegación inferior
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Marcar como activo el item correspondiente
+            const navMapping = {
+                'dashboard-screen': 0,
+                'debts-screen': 1,
+                'expenses-screen': 2,
+                'reports-screen': 3
+            };
+            
+            const navIndex = navMapping[screenId];
+            if (navIndex !== undefined) {
+                document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+            }
+        }
+
+        // Guardar configuración inicial
+        function saveConfig() {
+            const ingresoPromedio = parseFloat(document.getElementById('ingreso-promedio').value) || 0;
+            const gastosBasicos = parseFloat(document.getElementById('gastos-basicos').value) || 0;
+            const gastosPersonales = parseFloat(document.getElementById('gastos-personales').value) || 0;
+            
+            if (ingresoPromedio <= 0) {
+                alert('⚠️ Por favor ingresa un monto de ingresos válido');
+                return;
+            }
+            
+            appState.ingresoPromedio = ingresoPromedio;
+            appState.gastosBasicos = gastosBasicos;
+            appState.gastosPersonales = gastosPersonales;
+            appState.configurado = true;
+            
+            saveData();
+            showScreen('dashboard-screen');
+            updateDashboard();
+        }
+
+        // Actualizar fecha actual
+        function updateFechaActual() {
+            const fecha = new Date();
+            const opciones = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('fecha-actual').textContent = 
+                fecha.toLocaleDateString('es-ES', opciones);
+        }
+
+        // Actualizar dashboard principal
+        function updateDashboard() {
+            const hoy = new Date().toDateString();
+            
+            // Calcular ingresos del día
+            const ingresosDia = appState.ingresos
+                .filter(ingreso => new Date(ingreso.fecha).toDateString() === hoy)
+                .reduce((sum, ingreso) => sum + ingreso.monto, 0);
+            
+            // Calcular gastos del día
+            const gastosDia = appState.gastos
+                .filter(gasto => new Date(gasto.fecha).toDateString() === hoy)
+                .reduce((sum, gasto) => sum + gasto.monto, 0);
+            
+            // Calcular total a separar para deudas
+            const totalSeparar = appState.deudas.reduce((sum, deuda) => {
+                return sum + calcularPagoDiario(deuda.monto, deuda.fechaObjetivo);
+            }, 0);
+            
+            // Calcular dinero libre
+            const dineroLibre = ingresosDia - appState.gastosBasicos - appState.gastosPersonales - totalSeparar - gastosDia;
+            
+            // Actualizar interfaz
+            document.getElementById('ingresos-dia').textContent = `$${ingresosDia.toLocaleString()}`;
+            document.getElementById('separar-deudas').textContent = `$${totalSeparar.toLocaleString()}`;
+            document.getElementById('gastos-dia').textContent = `$${gastosDia.toLocaleString()}`;
+            
+            const dineroLibreElement = document.getElementById('dinero-libre');
+            dineroLibreElement.textContent = `$${dineroLibre.toLocaleString()}`;
+            dineroLibreElement.className = `resumen-valor ${dineroLibre >= 0 ? 'positivo' : 'negativo'}`;
+            
+            // Actualizar semáforo
+            updateSemaforo(ingresosDia, totalSeparar);
+            
+            // Mostrar estado de deudas
+            updateEstadoDeudas();
+        }
+
+        // Actualizar semáforo visual
+        function updateSemaforo(ingresosDia, totalSeparar) {
+            const semaforo = document.getElementById('semaforo-estado');
+            
+            if (ingresosDia === 0) {
+                semaforo.className = 'semaforo rojo';
+                semaforo.textContent = '🔴';
+            } else if (ingresosDia < totalSeparar) {
+                semaforo.className = 'semaforo amarillo';
+                semaforo.textContent = '🟡';
+            } else {
+                semaforo.className = 'semaforo verde';
+                semaforo.textContent = '🟢';
+            }
+        }
+
+        // Calcular pago diario necesario
+        function calcularPagoDiario(montoDeuda, fechaObjetivo) {
+            const hoy = new Date();
+            const objetivo = new Date(fechaObjetivo);
+            const diasRestantes = Math.ceil((objetivo - hoy) / (1000 * 60 * 60 * 24));
+            
+            if (diasRestantes <= 0) return montoDeuda;
+            return montoDeuda / diasRestantes;
+        }
+
+        // Mostrar modal agregar ingreso
+        function showAddIncomeModal() {
+            document.getElementById('income-modal').classList.add('show');
+            document.getElementById('monto-ingreso').focus();
+        }
+
+        // Mostrar modal agregar deuda
+        function showAddDebtModal() {
+            document.getElementById('debt-modal').classList.add('show');
+            // Establecer fecha mínima como mañana
+            const mañana = new Date();
+            mañana.setDate(mañana.getDate() + 1);
+            document.getElementById('fecha-objetivo').min = mañana.toISOString().split('T')[0];
+            document.getElementById('nombre-deuda').focus();
+        }
+
+        // Mostrar modal agregar gasto
+        function showAddExpenseModal() {
+            document.getElementById('expense-modal').classList.add('show');
+            document.getElementById('monto-gasto').focus();
+        }
+
+        // Cerrar modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+            // Limpiar campos
+            document.querySelectorAll(`#${modalId} input, #${modalId} select`).forEach(input => {
+                input.value = '';
+            });
+            // Limpiar previsualizaciones
+            document.getElementById('calculo-separacion').innerHTML = '';
+            document.getElementById('calculo-pago-diario').innerHTML = '';
+        }
+
+        // Calcular pago diario en modal de deuda
+        function calculateDailyPayment() {
+            const monto = parseFloat(document.getElementById('monto-deuda').value) || 0;
+            const fechaObjetivo = document.getElementById('fecha-objetivo').value;
+            
+            if (monto > 0 && fechaObjetivo) {
+                const pagoDiario = calcularPagoDiario(monto, fechaObjetivo);
+                const hoy = new Date();
+                const objetivo = new Date(fechaObjetivo);
+                const diasRestantes = Math.ceil((objetivo - hoy) / (1000 * 60 * 60 * 24));
+                
+                document.getElementById('calculo-pago-diario').innerHTML = `
+                    <div class="calculation-preview">
+                        <strong>📊 Cálculo Automático:</strong><br>
+                        💰 Necesitas separar <strong>${pagoDiario.toLocaleString()}</strong> diarios<br>
+                        📅 Durante <strong>${diasRestantes}</strong> días para cumplir tu meta
+                    </div>
+                `;
+            }
+        }
+
+        // Agregar ingreso
+        function addIncome() {
+            const monto = parseFloat(document.getElementById('monto-ingreso').value) || 0;
+            const descripcion = document.getElementById('descripcion-ingreso').value || 'Venta';
+            
+            if (monto <= 0) {
+                alert('⚠️ Por favor ingresa un monto válido');
+                return;
+            }
+            
+            const nuevoIngreso = {
+                id: Date.now(),
+                monto: monto,
+                descripcion: descripcion,
+                fecha: new Date().toISOString()
+            };
+            
+            appState.ingresos.push(nuevoIngreso);
+            saveData();
+            closeModal('income-modal');
+            updateDashboard();
+            
+            // Mostrar notificación de separación
+            const totalSeparar = appState.deudas.reduce((sum, deuda) => {
+                return sum + calcularPagoDiario(deuda.monto, deuda.fechaObjetivo);
+            }, 0);
+            
+            if (totalSeparar > 0) {
+                setTimeout(() => {
+                    alert(`💰 ¡Ingreso registrado!\n\n🎯 Recuerda separar ${totalSeparar.toLocaleString()} para tus deudas antes de gastarlo.`);
+                }, 300);
+            }
+        }
+
+        // Agregar deuda
+        function addDebt() {
+            const nombre = document.getElementById('nombre-deuda').value.trim();
+            const monto = parseFloat(document.getElementById('monto-deuda').value) || 0;
+            const fechaObjetivo = document.getElementById('fecha-objetivo').value;
+            
+            if (!nombre) {
+                alert('⚠️ Por favor ingresa una descripción para la deuda');
+                return;
+            }
+            
+            if (monto <= 0) {
+                alert('⚠️ Por favor ingresa un monto válido');
+                return;
+            }
+            
+            if (!fechaObjetivo) {
+                alert('⚠️ Por favor selecciona una fecha objetivo');
+                return;
+            }
+            
+            const nuevaDeuda = {
+                id: Date.now(),
+                nombre: nombre,
+                monto: monto,
+                montoOriginal: monto,
+                fechaObjetivo: fechaObjetivo,
+                fechaCreacion: new Date().toISOString(),
+                pagosRealizados: 0
+            };
+            
+            appState.deudas.push(nuevaDeuda);
+            saveData();
+            closeModal('debt-modal');
+            renderDeudas();
+            updateDashboard();
+            updateReportes();
+            
+            // Mensaje de confirmación
+            const pagoDiario = calcularPagoDiario(monto, fechaObjetivo);
+            setTimeout(() => {
+                alert(`✅ ¡Deuda agregada!\n\n🎯 Necesitas separar ${pagoDiario.toLocaleString()} diarios para cumplir tu meta.`);
+            }, 300);
+        }
+
+        // Agregar gasto
+        function addExpense() {
+            const monto = parseFloat(document.getElementById('monto-gasto').value) || 0;
+            const categoria = document.getElementById('categoria-gasto').value;
+            const descripcion = document.getElementById('descripcion-gasto').value.trim() || 'Gasto';
+            
+            if (monto <= 0) {
+                alert('⚠️ Por favor ingresa un monto válido');
+                return;
+            }
+            
+            // Validar si puede gastar
+            const hoy = new Date().toDateString();
+            const ingresosDia = appState.ingresos
+                .filter(ingreso => new Date(ingreso.fecha).toDateString() === hoy)
+                .reduce((sum, ingreso) => sum + ingreso.monto, 0);
+            
+            const gastosActuales = appState.gastos
+                .filter(gasto => new Date(gasto.fecha).toDateString() === hoy)
+                .reduce((sum, gasto) => sum + gasto.monto, 0);
+            
+            const totalSeparar = appState.deudas.reduce((sum, deuda) => {
+                return sum + calcularPagoDiario(deuda.monto, deuda.fechaObjetivo);
+            }, 0);
+            
+            const dineroDisponible = ingresosDia - appState.gastosBasicos - appState.gastosPersonales - totalSeparar - gastosActuales;
+            
+            if (categoria !== 'emergencia' && monto > dineroDisponible) {
+                const confirmar = confirm(`⚠️ ATENCIÓN: Este gasto excede tu dinero disponible.\n\nDisponible: ${dineroDisponible.toLocaleString()}\nGasto: ${monto.toLocaleString()}\n\n¿Estás seguro de continuar?`);
+                if (!confirmar) return;
+            }
+            
+            const nuevoGasto = {
+                id: Date.now(),
+                monto: monto,
+                categoria: categoria,
+                descripcion: descripcion,
+                fecha: new Date().toISOString()
+            };
+            
+            appState.gastos.push(nuevoGasto);
+            saveData();
+            closeModal('expense-modal');
+            renderGastos();
+            updateDashboard();
+        }
+
+        // Renderizar lista de deudas
+        function renderDeudas() {
+            const container = document.getElementById('deudas-container');
+            
+            if (appState.deudas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📝</div>
+                        <h3>¡Comienza agregando tu primera deuda!</h3>
+                        <p>Toma control de tus finanzas paso a paso</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            appState.deudas.forEach(deuda => {
+                const pagoDiario = calcularPagoDiario(deuda.monto, deuda.fechaObjetivo);
+                const progreso = ((deuda.montoOriginal - deuda.monto) / deuda.montoOriginal) * 100;
+                const hoy = new Date();
+                const objetivo = new Date(deuda.fechaObjetivo);
+                const diasRestantes = Math.ceil((objetivo - hoy) / (1000 * 60 * 60 * 24));
+                
+                html += `
+                    <div class="deuda-item">
+                        <div class="deuda-header">
+                            <span class="deuda-nombre">${deuda.nombre}</span>
+                            <span class="deuda-monto">${deuda.monto.toLocaleString()}</span>
+                        </div>
+                        <div class="progreso-bar">
+                            <div class="progreso-fill" style="width: ${progreso}%"></div>
+                        </div>
+                        <div class="deuda-info">
+                            <span>💰 ${pagoDiario.toLocaleString()}/día</span>
+                            <span>📅 ${diasRestantes > 0 ? diasRestantes + ' días' : 'Vencida'}</span>
+                            <span>${progreso.toFixed(1)}% pagado</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-outline" onclick="showPaymentModal(${deuda.id})" style="font-size: 0.9em; padding: 8px 15px;">
+                                💳 Registrar Pago
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Renderizar lista de gastos
+        function renderGastos() {
+            const container = document.getElementById('gastos-list');
+            const hoy = new Date().toDateString();
+            
+            const gastosHoy = appState.gastos.filter(gasto => 
+                new Date(gasto.fecha).toDateString() === hoy
+            );
+            
+            if (gastosHoy.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🛒</div>
+                        <p>No has registrado gastos hoy</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            let totalGastos = 0;
+            
+            gastosHoy.forEach(gasto => {
+                totalGastos += gasto.monto;
+                const categoriaIcon = {
+                    'basicos': '🏠',
+                    'personales': '🎪',
+                    'emergencia': '🚨'
+                };
+                
+                html += `
+                    <div class="resumen-item">
+                        <div>
+                            <span>${categoriaIcon[gasto.categoria]} ${gasto.descripcion}</span><br>
+                            <small style="color: #666;">${gasto.categoria}</small>
+                        </div>
+                        <span class="resumen-valor negativo">${gasto.monto.toLocaleString()}</span>
+                    </div>
+                `;
+            });
+            
+            html = `
+                <div style="border-bottom: 2px solid #f0f0f0; margin-bottom: 15px; padding-bottom: 10px;">
+                    <div class="resumen-item">
+                        <strong>Total gastado hoy</strong>
+                        <strong class="resumen-valor negativo">${totalGastos.toLocaleString()}</strong>
+                    </div>
+                </div>
+            ` + html;
+            
+            container.innerHTML = html;
+        }
+
+        // Actualizar estado de deudas en dashboard
+        function updateEstadoDeudas() {
+            const container = document.getElementById('estado-deudas');
+            
+            if (appState.deudas.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-warning">
+                        📋 Aún no has agregado deudas. <strong>¡Perfecto momento para empezar a organizarte!</strong>
+                    </div>
+                `;
+                return;
+            }
+            
+            const totalDeudas = appState.deudas.reduce((sum, deuda) => sum + deuda.monto, 0);
+            const totalSeparar = appState.deudas.reduce((sum, deuda) => {
+                return sum + calcularPagoDiario(deuda.monto, deuda.fechaObjetivo);
+            }, 0);
+            
+            container.innerHTML = `
+                <div class="card">
+                    <h3>🎯 Estado de Deudas</h3>
+                    <div class="resumen-item">
+                        <span class="resumen-label">Total por pagar</span>
+                        <span class="resumen-valor negativo">${totalDeudas.toLocaleString()}</span>
+                    </div>
+                    <div class="resumen-item">
+                        <span class="resumen-label">Separar diariamente</span>
+                        <span class="resumen-valor negativo">${totalSeparar.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Actualizar reportes
+        function updateReportes() {
+            updateReporteSemanal();
+            updateProgresoDeudas();
+        }
+
+        // Reporte semanal
+        function updateReporteSemanal() {
+            const container = document.getElementById('reporte-semanal');
+            const hace7Dias = new Date();
+            hace7Dias.setDate(hace7Dias.getDate() - 7);
+            
+            const ingresosSemana = appState.ingresos
+                .filter(ingreso => new Date(ingreso.fecha) >= hace7Dias)
+                .reduce((sum, ingreso) => sum + ingreso.monto, 0);
+            
+            const gastosSemana = appState.gastos
+                .filter(gasto => new Date(gasto.fecha) >= hace7Dias)
+                .reduce((sum, gasto) => sum + gasto.monto, 0);
+            
+            const promedioIngresos = ingresosSemana / 7;
+            const promedioGastos = gastosSemana / 7;
+            
+            container.innerHTML = `
+                <div class="resumen-item">
+                    <span class="resumen-label">💵 Ingresos últimos 7 días</span>
+                    <span class="resumen-valor positivo">${ingresosSemana.toLocaleString()}</span>
+                </div>
+                <div class="resumen-item">
+                    <span class="resumen-label">💸 Gastos últimos 7 días</span>
+                    <span class="resumen-valor negativo">${gastosSemana.toLocaleString()}</span>
+                </div>
+                <div class="resumen-item">
+                    <span class="resumen-label">📊 Promedio ingresos/día</span>
+                    <span class="resumen-valor">${promedioIngresos.toLocaleString()}</span>
+                </div>
+                <div class="resumen-item">
+                    <span class="resumen-label">📊 Promedio gastos/día</span>
+                    <span class="resumen-valor">${promedioGastos.toLocaleString()}</span>
+                </div>
+            `;
+        }
+
+        // Progreso de deudas
+        function updateProgresoDeudas() {
+            const container = document.getElementById('progreso-deudas');
+            
+            if (appState.deudas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🎯</div>
+                        <p>Agrega deudas para ver tu progreso</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            appState.deudas.forEach(deuda => {
+                const progreso = ((deuda.montoOriginal - deuda.monto) / deuda.montoOriginal) * 100;
+                const hoy = new Date();
+                const objetivo = new Date(deuda.fechaObjetivo);
+                const diasRestantes = Math.ceil((objetivo - hoy) / (1000 * 60 * 60 * 24));
+                
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <strong>${deuda.nombre}</strong>
+                            <span>${deuda.monto.toLocaleString()}</span>
+                        </div>
+                        <div class="progreso-bar">
+                            <div class="progreso-fill" style="width: ${progreso}%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #666; margin-top: 5px;">
+                            <span>${progreso.toFixed(1)}% completado</span>
+                            <span>${diasRestantes > 0 ? diasRestantes + ' días restantes' : 'Vencida'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Guardar datos en localStorage
+        function saveData() {
+            localStorage.setItem('appLiquidezPeter', JSON.stringify(appState));
+        }
+
+        // Cargar datos desde localStorage
+        function loadData() {
+            const savedData = localStorage.getItem('appLiquidezPeter');
+            if (savedData) {
+                appState = { ...appState, ...JSON.parse(savedData) };
+            }
+        }
+
+        // Event listeners para cerrar modales al hacer click fuera
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Prevenir el envío de formularios al presionar Enter
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+                e.preventDefault();
+                // Buscar el botón principal del modal actual
+                const modal = e.target.closest('.modal');
+                if (modal) {
+                    const btn = modal.querySelector('.btn-primary');
+                    if (btn) btn.click();
+                }
+            }
+        });
+
+        // Actualizar cálculos cuando cambian los campos en modales
+        document.getElementById('monto-ingreso').addEventListener('input', function() {
+            const monto = parseFloat(this.value) || 0;
+            if (monto > 0) {
+                const totalSeparar = appState.deudas.reduce((sum, deuda) => {
+                    return sum + calcularPagoDiario(deuda.monto, deuda.fechaObjetivo);
+                }, 0);
+                
+                if (totalSeparar > 0) {
+                    const dineroLibre = monto - appState.gastosBasicos - appState.gastosPersonales - totalSeparar;
+                    document.getElementById('calculo-separacion').innerHTML = `
+                        <div class="calculation-preview">
+                            <strong>💰 Con este ingreso:</strong><br>
+                            🎯 Separa para deudas: <strong>${totalSeparar.toLocaleString()}</strong><br>
+                            ✅ Dinero libre: <strong>${dineroLibre.toLocaleString()}</strong>
+                        </div>
+                    `;
+                }
+            }
+        });
+
+        // Actualizar cálculos cuando cambian monto o fecha en modal de deuda
+        document.getElementById('monto-deuda').addEventListener('input', calculateDailyPayment);
+    </script>
+</body>
+</html>
