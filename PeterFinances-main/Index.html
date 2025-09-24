@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Diario - Peter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 10px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .dark-mode {
+            background: #121212;
+            color: #eee;
+        }
+
+        .dark-mode .container {
+            background: #1e1e1e;
+            color: #eee;
+        }
+
+        .dark-mode .status-card,
+        .dark-mode .item,
+        .dark-mode .nav-tabs,
+        .dark-mode .footer {
+            background: #2a2a2a;
+            color: #eee;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .semaforo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .rojo { background: #f44336; }
+        .verde { background: #4CAF50; }
+
+        .section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+            padding: 8px 12px;
+            width: auto;
+            font-size: 14px;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .status-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .status-value {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .positivo { color: #4CAF50; }
+        .negativo { color: #f44336; }
+        .neutro { color: #333; }
+
+        .item {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-time {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .item-desc {
+            font-weight: 500;
+            margin: 2px 0;
+        }
+
+        .item-amount {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            background: white;
+            border-bottom-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: #999;
+            font-size: 12px;
+            background: #f8f9fa;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>💰 Control Diario</h1>
+        <p>Peter - <span id="fecha-hoy"></span></p>
+        <div class="semaforo" id="semaforo">🔴</div>
+        <p id="estado-texto">Aún no cumples la meta diaria</p>
+    </div>
+
+    <div class="section">
+        <div class="status-card">
+            <div class="status-row">
+                <span class="status-label">💵 Ingresos del día</span>
+                <span class="status-value positivo" id="total-ingresos">$0</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">🎯 Meta para deudas</span>
+                <span class="status-value negativo" id="meta-deudas">$0</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">🏠 Gastos básicos</span>
+                <span class="status-value negativo" id="gastos-basicos-dia">$0</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">🛒 Gastos extras</span>
+                <span class="status-value negativo" id="gastos-extras-dia">$0</span>
+            </div>
+            <div class="status-row" style="border-top: 2px solid #4CAF50; padding-top: 12px; margin-top: 8px;">
+                <span class="status-label"><strong>✅ Dinero disponible</strong></span>
+                <span class="status-value" id="dinero-disponible">$0</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">💎 Excedente acumulado</span>
+                <span class="status-value positivo" id="excedente-total">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <div class="nav-tab active" onclick="mostrarTab('ingresos')">💰 Ingresos</div>
+        <div class="nav-tab" onclick="mostrarTab('gastos')">💸 Gastos</div>
+        <div class="nav-tab" onclick="mostrarTab('deudas')">📋 Deudas</div>
+        <div class="nav-tab" onclick="mostrarTab('config')">⚙️ Config</div>
+    </div>
+
+    <!-- Tab Deudas -->
+    <div class="tab-content" id="tab-deudas">
+        <div class="section">
+            <div class="section-title">➕ Agregar Deuda</div>
+            <div class="input-group">
+                <label>Descripción</label>
+                <input type="text" id="deuda-nombre" placeholder="Tarjeta de crédito">
+            </div>
+            <div class="input-group">
+                <label>Monto total ($)</label>
+                <input type="number" id="deuda-monto" placeholder="200000">
+            </div>
+            <div class="input-group">
+                <label>Fecha límite de pago</label>
+                <input type="date" id="deuda-fecha">
+            </div>
+            <button class="btn btn-primary" onclick="agregarDeuda()">📋 Agregar Deuda</button>
+        </div>
+        <div class="section">
+            <div class="section-title">📊 Mis Deudas</div>
+            <div id="lista-deudas">
+                <div class="empty-state">No tienes deudas registradas</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Configuración -->
+    <div class="tab-content" id="tab-config">
+        <div class="section">
+            <div class="section-title">⚙️ Configuración</div>
+            <div class="input-group">
+                <label>Gastos básicos promedio por día ($)</label>
+                <input type="number" id="config-gastos-basicos" placeholder="15000">
+            </div>
+            <button class="btn btn-primary" onclick="guardarConfig()">✅ Guardar</button>
+
+            <div style="margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="toggleDarkMode()">🌙 Alternar Modo Oscuro</button>
+                <button class="btn btn-secondary" onclick="exportarDatos()">📤 Exportar Datos</button>
+                <button class="btn btn-danger" onclick="resetearApp()">🗑️ Resetear App</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        App creada para Peter por Bernardo
+    </div>
+</div>
+
+<script>
+    let estado = {
+        gastosBasicosPromedio: 0,
+        deudas: [],
+        ingresos: [],
+        gastos: [],
+        excedenteTotalAcumulado: 0,
+        darkMode: false
+    };
+
+    function inicializar() {
+        cargarDatos();
+        if (estado.darkMode) document.body.classList.add('dark-mode');
+        actualizarFecha();
+        actualizarEstado();
+        renderizarTodo();
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        estado.darkMode = document.body.classList.contains('dark-mode');
+        guardarDatos();
+    }
+
+    // Agregar deuda con fecha límite
+    function agregarDeuda() {
+        const nombre = document.getElementById('deuda-nombre').value.trim();
+        const monto = parseInt(document.getElementById('deuda-monto').value);
+        const fechaLimite = document.getElementById('deuda-fecha').value;
+
+        if (!nombre || !monto || !fechaLimite || monto <= 0) {
+            alert('Por favor completa todos los campos correctamente');
+            return;
+        }
+
+        const hoy = new Date();
+        const fechaFinal = new Date(fechaLimite);
+        const dias = Math.ceil((fechaFinal - hoy) / (1000 * 60 * 60 * 24));
+
+        if (dias <= 0) {
+            alert('La fecha debe ser futura');
+            return;
+        }
+
+        const nuevaDeuda = {
+            id: Date.now(),
+            nombre,
+            monto,
+            fechaLimite,
+            dias,
+            pagoDiario: Math.round(monto / dias)
+        };
+
+        estado.deudas.push(nuevaDeuda);
+
+        document.getElementById('deuda-nombre').value = '';
+        document.getElementById('deuda-monto').value = '';
+        document.getElementById('deuda-fecha').value = '';
+
+        guardarDatos();
+        actualizarEstado();
+        renderizarDeudas();
+    }
+
+    // resto de funciones sin cambios...
+    // (actualizarEstado, agregarIngreso, agregarGasto, renderizar, guardarDatos, cargarDatos, etc.)
+
+    function actualizarFecha() {
+        const hoy = new Date();
+        const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('fecha-hoy').textContent = hoy.toLocaleDateString('es-ES', opciones);
+    }
+
+    function guardarDatos() {
+        localStorage.setItem('controlDiarioPeter', JSON.stringify(estado));
+    }
+
+    function cargarDatos() {
+        const datosGuardados = localStorage.getItem('controlDiarioPeter');
+        if (datosGuardados) estado = { ...estado, ...JSON.parse(datosGuardados) };
+    }
+
+    window.addEventListener('load', inicializar);
+</script>
+</body>
+</html>
